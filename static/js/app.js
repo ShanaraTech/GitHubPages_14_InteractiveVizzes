@@ -2,29 +2,57 @@
 function dropdown(){
 
 // Get the data using the URL in line 2
-d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then(function(data) {
+d3.csv("https://raw.githubusercontent.com/ShanaraTech/Project4CSV/main/categories.csv").then(function(data) {
+    console.log(data);
+
+// Use D3 to select the dropdowns
+    let dropdown1 = d3.select("#selDataset1");
+    let dropdown2 = d3.select("#selDataset2");
+
+let categories = []
+function removeDuplicates(arr) {
+    return arr.filter((item,
+        index) => arr.indexOf(item) === index);
+}
+
+// populate the dropdown
+    for (let i = 0; i < data.length; i++){
+        let category = data[i] ["Category"];
+        categories.push(category)
+       // dropdown1.append("option").text(category);
+    }
+    let unique_categories = removeDuplicates(categories);
+    for (let i = 0; i < unique_categories.length; i++){
+               dropdown1.append("option").text(unique_categories[i]);
+    }
+    let symptoms = data.filter(row => row.Category == unique_categories[0]);
+    console.log(symptoms);
+    for (let i = 0; i < symptoms.length; i++){
+        let sym = symptoms[i] ["Symtoms"];
+        
+       dropdown2.append("option").text(sym);
+    }
+
+
+})
+}
+function optionChanged(category){
+    d3.csv("https://raw.githubusercontent.com/ShanaraTech/Project4CSV/main/categories.csv").then(function(data) {
     console.log(data);
 
 // Use D3 to select the dropdown
-    let dropdown = d3.select("#selDataset");
-
-// populate the dropdown
-    for (let i = 0; i < data.names.length; i++){
-        let name = data.names[i];
-        dropdown.append("option").text(name);
+    
+    let dropdown2 = d3.select("#selDataset2");
+    let symptoms = data.filter(row => row.Category == category);
+    console.log(symptoms);
+    dropdown2.html("");
+    for (let i = 0; i < symptoms.length; i++){
+        let sym = symptoms[i] ["Symtoms"];
+       
+       dropdown2.append("option").text(sym);
     }
 
-// Extract necessary data fields
-   let individual = data.names[0];
-    console.log(individual);
-    charts(individual)
-
-    table(individual)
 })
-}
-function optionChanged(individual){
-    charts(individual)
-    table(individual)
 }
 function table(individual){
     d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then(function(data) {
@@ -38,7 +66,7 @@ function table(individual){
 let dropdownMetadata = d3.select("#sample-metadata");
 
 dropdownMetadata.html("");
-// Prints "name Jean-Luc Picard" followed by "rank Captain"
+// Prints "Name" followed by "Demographic Info"
 Object.entries(result).forEach(entry => {
     const [key, value] = entry;
     console.log(key, value);
